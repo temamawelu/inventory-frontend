@@ -1,15 +1,12 @@
 ﻿import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import LanguageSwitcher from '../Common/LanguageSwitcher';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -32,20 +29,14 @@ const Navbar = () => {
       zIndex: 1000
     }}>
       <div style={{ fontSize: '18px', fontWeight: 'bold' }}>
-        {t('app.title')}
+        Web Based Inventory Management System
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        {/* Language Switcher */}
-        <LanguageSwitcher />
-        
-        {/* User Profile */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <FontAwesomeIcon icon={faUserCircle} />
           <span>{user?.username} ({user?.role_name})</span>
         </div>
-        
-        {/* Logout Button */}
         <button
           onClick={handleLogout}
           style={{
@@ -61,7 +52,7 @@ const Navbar = () => {
           }}
         >
           <FontAwesomeIcon icon={faSignOutAlt} />
-          {t('nav.logout')}
+          Logout
         </button>
       </div>
     </nav>

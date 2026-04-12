@@ -14,6 +14,12 @@ const TransactionList = () => {
     notes: ''
   });
 
+  const exportToExcel = () => {
+    const token = localStorage.getItem('token');
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    window.open(`${apiUrl}/export/transactions?token=${token}`, '_blank');
+  };
+
   useEffect(() => {
     fetchTransactions();
     fetchProducts();
@@ -65,9 +71,14 @@ const TransactionList = () => {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h1 style={{ fontSize: '28px', fontWeight: '600' }}>🔄 Stock Transactions</h1>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ padding: '10px 20px' }}>
-          + New Transaction
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="btn btn-success" onClick={exportToExcel}>
+            📊 Export Excel
+          </button>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+            + New Transaction
+          </button>
+        </div>
       </div>
 
       <div className="card" style={{ overflowX: 'auto' }}>

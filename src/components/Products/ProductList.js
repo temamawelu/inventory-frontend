@@ -19,6 +19,10 @@ const ProductList = () => {
   });
   const [categories, setCategories] = useState([]);
 
+  const exportToExcel = () => {
+    window.open(`${process.env.REACT_APP_API_URL}/export/products`, '_blank');
+                              };
+
   useEffect(() => {
     fetchProducts();
     fetchCategories();
@@ -160,6 +164,16 @@ const ProductList = () => {
         <button className="btn btn-secondary" onClick={() => { setSearchTerm(''); fetchProducts(); }}>Reset</button>
       </div>
 
+
+       <button 
+    className="btn btn-success" 
+    onClick={() => {
+        const token = localStorage.getItem('token');
+        window.open(`${process.env.REACT_APP_API_URL}/export/products?token=${token}`, '_blank');
+    }}
+>     📊 Export Excel
+      </button>
+
       {/* Products Table */}
       <div className="card" style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -180,7 +194,8 @@ const ProductList = () => {
                 <td style={{ padding: '12px' }}>{product.sku}</td>
                 <td style={{ padding: '12px' }}>{product.name}</td>
                 <td style={{ padding: '12px' }}>{product.category_name || '-'}</td>
-                <td style={{ padding: '12px' }}></td>
+                <td style={{ padding: '12px' }}>{product.unit_price !== undefined ? formatPrice(product.unit_price) : '0.00'
+                  }</td>
                 <td style={{ padding: '12px', color: product.quantity_on_hand <= product.reorder_point ? '#dc2626' : '#10b981' }}>
                   {product.quantity_on_hand}
                   {product.quantity_on_hand <= product.reorder_point && (

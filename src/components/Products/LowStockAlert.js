@@ -20,15 +20,25 @@ const LowStockAlert = () => {
     }
   };
 
+    const exportToExcel = () => {
+    const token = localStorage.getItem('token');
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    window.open(`${apiUrl}/export/low-stock?token=${token}`, '_blank');
+  };
+
+
   if (loading) return <div className="loading">Loading alerts...</div>;
 
   return (
     <div>
-      <h1 style={{ marginBottom: '24px', fontSize: '28px', fontWeight: '600' }}>⚠️ Low Stock Alerts</h1>
+      <h1 style={{ marginBottom: '24px', fontSize: '28px', fontWeight: '600' }}>Low Stock Alerts</h1>
+        <button className="btn btn-success" onClick={exportToExcel}>
+          📊 Export Excel
+        </button>
       <div className="card">
         {products.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px', color: '#10b981' }}>
-            ✅ All products have sufficient stock!
+             All products have sufficient stock!
           </div>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>

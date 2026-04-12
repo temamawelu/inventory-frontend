@@ -3,8 +3,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  // const [username, setUsername] = useState('admin');
+  // const [password, setPassword] = useState('admin123');
+
+const [username, setUsername] = useState('');
+const [password, setPassword] = useState('');
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -33,7 +37,7 @@ const Login = () => {
     <div style={{ maxWidth: '400px', margin: '100px auto' }}>
       <div className="card">
         <h2 style={{ textAlign: 'center' }}>Inventory Management System</h2>
-        <p style={{ textAlign: 'center', color: '#6b7280' }}>Sign in to continue</p>
+        <p style={{ textAlign: 'center', color: '#6b7280' }}>Sign in to the system</p>
         
         {error && <div className="error">{error}</div>}
         

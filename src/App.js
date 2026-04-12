@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Auth/Login';
 import Dashboard from './components/Dashboard/Dashboard';
 import ProductList from './components/Products/ProductList';
+import SupplierList from './components/Suppliers/SupplierList';
 import CategoryList from './components/Categories/CategoryList';
 import TransactionList from './components/Transactions/TransactionList';
 import LowStockAlert from './components/Products/LowStockAlert';
@@ -42,6 +43,7 @@ function AppContent() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/products" element={<ProductList />} />
         <Route path="/categories" element={<CategoryList />} />
+        <Route path="/suppliers" element={<SupplierList />} />
         <Route path="/transactions" element={<TransactionList />} />
         <Route path="/low-stock" element={<LowStockAlert />} />
         <Route path="/profile" element={<Profile />} />

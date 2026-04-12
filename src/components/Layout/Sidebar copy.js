@@ -1,29 +1,21 @@
 ﻿import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faTachometerAlt, 
-  faBox, 
-  faTags, 
-  faTruck, 
-  faExchangeAlt, 
-  faExclamationTriangle, 
-  faUserCircle 
-} from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faBox, faTags, faExchangeAlt, faExclamationTriangle, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = () => {
   const location = useLocation();
-  const { t } = useTranslation();
   
   const menuItems = [
-    { path: '/dashboard', label: t('nav.dashboard'), icon: faTachometerAlt },
-    { path: '/products', label: t('nav.products'), icon: faBox },
-    { path: '/categories', label: t('nav.categories'), icon: faTags },
-    { path: '/suppliers', label: t('nav.suppliers'), icon: faTruck },
-    { path: '/transactions', label: t('nav.transactions'), icon: faExchangeAlt },
-    { path: '/low-stock', label: t('nav.lowStock'), icon: faExclamationTriangle },
-    { path: '/profile', label: t('nav.profile'), icon: faUserCircle },
+    { path: '/dashboard', label: 'Dashboard', icon: faTachometerAlt },
+    { path: '/products', label: 'Products', icon: faBox },
+    { path: '/categories', label: 'Categories', icon: faTags },
+    { path: '/suppliers', label: 'Suppliers', icon: faUserCircle },
+     
+
+    { path: '/transactions', label: 'Transactions', icon: faExchangeAlt },
+    { path: '/low-stock', label: 'Low Stock', icon: faExclamationTriangle },
+    { path: '/profile', label: 'My Profile', icon: faUserCircle },
   ];
 
   return (

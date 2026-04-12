@@ -1,46 +1,78 @@
-﻿import api from './api';
+﻿const productRepository = require('../repositories/productRepository');
 
-export const getProducts = async () => {
-  const response = await api.get('/products');
-  return response.data;
-};
+class ProductService {
+    async getAllProducts() {
+        return await productRepository.findAll();
+    }
 
-export const getProductById = async (id) => {
-  const response = await api.get(`/products/${id}`);
-  return response.data;
-};
+    async getProductById(id) {
+        const product = await productRepository.findById(id);
+        if (!product) {
+            throw new Error('Product not found');
+        }
+        return product;
+    }
 
-export const createProduct = async (data) => {
-  const response = await api.post('/products', data);
-  return response.data;
-};
+    async createProduct(productData, userId) {
+        const { sku, name, description, category_id, unit_price, quantity_on_hand, reorder_point, location } = productData;
 
-export const updateProduct = async (id, data) => {
-  const response = await api.put(`/products/${id}`, data);
-  return response.data;
-};
+        if (!sku || !name || unit_price === undefined) {
+            throw new Error('SKU, Name and Unit Price are required');
+        }
 
-export const deleteProduct = async (id) => {
-  const response = await api.delete(`/products/${id}`);
-  return response.data;
-};
+        const existingSku = await productRepository.findBySku(sku);
+        if (existingSku) {
+            throw new Error('SKU already exists');
+        }
 
-export const searchProducts = async (query) => {
-  const response = await api.get(`/products/search?q=${query}`);
-  return response.data;
-};
+        const productId = await productRepository.create([
+            sku, name, description || null, category_id || null, unit_price,
+            quantity_on_hand || 0, reorder_point || 0, location || null, userId
+        ]);
 
-export const getLowStockProducts = async () => {
-  const response = await api.get('/products/low-stock');
-  return response.data;
-};
+        return { id: productId, sku, name };
+    }
 
-export const getCategories = async () => {
-  // If you have categories endpoint, otherwise return empty array
-  try {
-    const response = await api.get('/categories');
-    return response.data;
-  } catch (error) {
-    return { data: [] };
-  }
-};
+    async updateProduct(id, productData) {
+        const { name, description, category_id, unit_price, reorder_point, location } = productData;
+
+        const product = await productRepository.findById(id);
+        if (!product) {
+            throw new Error('Product not found');
+        }
+
+        const affected = await productRepository.update(id, [
+            name || product.name,
+            description !== undefined ? description : product.description,
+            category_id !== undefined ? category_id : product.category_id,
+            unit_price !== undefined ? unit_price : product.unit_price,
+            reorder_point !== undefined ? reorder_point : product.reorder_point,
+            location !== undefined ? location : product.location
+        ]);
+
+        return affected > 0;
+    }
+
+    async deleteProduct(id) {
+        const product = await productRepository.findById(id);
+        if (!product) {
+            throw new Error('Product not found');
+        }
+
+        const affected = await productRepository.softDelete(id);
+        return affected > 0;
+    }
+
+    async searchProducts(searchTerm) {
+        if (!searchTerm || searchTerm.trim() === '') {
+            return await this.getAllProducts();
+        }
+        return await productRepository.search(searchTerm);
+    }
+
+    async getLowStockProducts() {
+        return await productRepository.getLowStock();
+    }
+}
+
+module.exports = new ProductService();
