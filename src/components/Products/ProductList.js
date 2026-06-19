@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 const ProductList = () => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -144,9 +146,13 @@ const ProductList = () => {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: '600' }}>📦 Products</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: '600' }}>
+
+    {t('products.title')}
+
+        </h1>
         <button className="btn btn-primary" onClick={openAddModal} style={{ padding: '10px 20px' }}>
-          + Add Product
+          {t('products.addProduct')}
         </button>
       </div>
 
@@ -180,12 +186,12 @@ const ProductList = () => {
           <thead>
             <tr style={{ background: '#f9fafb' }}>
               <th style={{ padding: '12px' }}>SKU</th>
-              <th style={{ padding: '12px' }}>Name</th>
-              <th style={{ padding: '12px' }}>Category</th>
-              <th style={{ padding: '12px' }}>Price</th>
-              <th style={{ padding: '12px' }}>Stock</th>
-              <th style={{ padding: '12px' }}>Location</th>
-              <th style={{ padding: '12px' }}>Actions</th>
+              <th style={{ padding: '12px' }}>{t('products.name')}</th>
+              <th style={{ padding: '12px' }}>{t('products.category')}</th>
+              <th style={{ padding: '12px' }}>{t('products.price')}</th>
+              <th style={{ padding: '12px' }}>{t('products.stock')}</th>
+              <th style={{ padding: '12px' }}>{t('products.location')}</th>
+              <th style={{ padding: '12px' }}>{t('products.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -206,15 +212,15 @@ const ProductList = () => {
                 </td>
                 <td style={{ padding: '12px' }}>{product.location || '-'}</td>
                 <td style={{ padding: '12px' }}>
-                  <button className="btn btn-primary" style={{ marginRight: '8px', padding: '6px 12px' }} onClick={() => openEditModal(product)}>Edit</button>
-                  <button className="btn btn-danger" style={{ padding: '6px 12px' }} onClick={() => handleDelete(product.id)}>Delete</button>
+                  <button className="btn btn-primary" style={{ marginRight: '8px', padding: '6px 12px' }} onClick={() => openEditModal(product)}> {t('Edit')}</button>
+                  <button className="btn btn-danger" style={{ padding: '6px 12px' }} onClick={() => handleDelete(product.id)}> {t('Delete')}</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {products.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px' }}>No products found</div>
+          <div style={{ textAlign: 'center', padding: '40px' }}> {t('No products found')}</div>
         )}
       </div>
 
@@ -226,46 +232,46 @@ const ProductList = () => {
           alignItems: 'center', zIndex: 1000
         }}>
           <div className="card" style={{ width: '500px', maxWidth: '90%', maxHeight: '90%', overflow: 'auto' }}>
-            <h3 style={{ marginBottom: '16px' }}>{editingProduct ? 'Edit Product' : 'Add Product'}</h3>
+            <h3 style={{ marginBottom: '16px' }}>{editingProduct ? t('Edit Product') : t('Add Product')}</h3>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>SKU *</label>
+                <label>{t('SKU *)')}</label>
                 <input type="text" value={formData.sku} onChange={(e) => setFormData({...formData, sku: e.target.value})} required />
               </div>
               <div className="form-group">
-                <label>Name *</label>
+                <label>{t('Name *)')}</label>
                 <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
               </div>
               <div className="form-group">
-                <label>Category</label>
+                <label>{t('Category')}</label>
                 <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})}>
                   <option value="">Select Category</option>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
               <div className="form-group">
-                <label>Unit Price *</label>
+                <label>{t('Unit Price *)')}</label>
                 <input type="number" step="0.01" value={formData.unit_price} onChange={(e) => setFormData({...formData, unit_price: e.target.value})} required />
               </div>
               <div className="form-group">
-                <label>Quantity on Hand</label>
+                <label>{t('Quantity on Hand')}</label>
                 <input type="number" value={formData.quantity_on_hand} onChange={(e) => setFormData({...formData, quantity_on_hand: e.target.value})} />
               </div>
               <div className="form-group">
-                <label>Reorder Point (Min Stock)</label>
+                <label>{t('Reorder Point (Min Stock)')}</label>
                 <input type="number" value={formData.reorder_point} onChange={(e) => setFormData({...formData, reorder_point: e.target.value})} />
               </div>
               <div className="form-group">
-                <label>Location</label>
+                <label>{t('Location')}</label>
                 <input type="text" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="A1-Shelf1" />
               </div>
               <div className="form-group">
-                <label>Description</label>
+                <label>{t('Description')}</label>
                 <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} rows="3" />
               </div>
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '16px' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Save</button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}> {t('Cancel')}</button>
+                <button type="submit" className="btn btn-primary"> {t('Save')}</button>
               </div>
             </form>
           </div>

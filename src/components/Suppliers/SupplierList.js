@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { getSuppliers, createSupplier, updateSupplier, deleteSupplier, searchSuppliers } from '../../services/supplierService';
+import { useTranslation } from 'react-i18next';     
 
 const SupplierList = () => {
+  const { t } = useTranslation();
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -112,14 +114,14 @@ const SupplierList = () => {
     }
   };
 
-  if (loading) return <div className="loading">Loading suppliers...</div>;
+  if (loading) return <div className="loading">{t('Loading suppliers...')}</div>;
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: '600' }}>🏭 Suppliers</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: '600' }}>{t('🏭 Suppliers')}</h1>
         <button className="btn btn-primary" onClick={openAddModal} style={{ padding: '10px 20px' }}>
-          + Add Supplier
+          {t(' + Add Supplier')}
         </button>
       </div>
 
@@ -127,14 +129,14 @@ const SupplierList = () => {
       <div className="card" style={{ display: 'flex', gap: '10px', marginBottom: '20px', padding: '16px' }}>
         <input
           type="text"
-          placeholder="Search by name, contact person, or email..."
+          placeholder={t('Search by name, contact person, or email...')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: 1, padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }}
           onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
         />
-        <button className="btn btn-primary" onClick={handleSearch}>🔍 Search</button>
-        <button className="btn btn-secondary" onClick={() => { setSearchTerm(''); fetchSuppliers(); }}>Reset</button>
+        <button className="btn btn-primary" onClick={handleSearch}> {t('🔍 Search')}</button>
+        <button className="btn btn-secondary" onClick={() => { setSearchTerm(''); fetchSuppliers(); }}> {t('Reset')}</button>
       </div>
 
       {/* Suppliers Table */}
@@ -142,12 +144,12 @@ const SupplierList = () => {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#f9fafb' }}>
-              <th style={{ padding: '12px' }}>Name</th>
-              <th style={{ padding: '12px' }}>Contact Person</th>
-              <th style={{ padding: '12px' }}>Email</th>
-              <th style={{ padding: '12px' }}>Phone</th>
-              <th style={{ padding: '12px' }}>Tax ID</th>
-              <th style={{ padding: '12px' }}>Actions</th>
+              <th style={{ padding: '12px' }}>{t('Name')}</th>
+              <th style={{ padding: '12px' }}>{t('Contact Person')}</th>
+              <th style={{ padding: '12px' }}>{t('Email')}</th>
+              <th style={{ padding: '12px' }}>{t('Phone')}</th>
+              <th style={{ padding: '12px' }}>{t('Tax ID')}</th>
+              <th style={{ padding: '12px' }}>{t('Actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -159,15 +161,15 @@ const SupplierList = () => {
                 <td style={{ padding: '12px' }}>{supplier.phone || '-'}</td>
                 <td style={{ padding: '12px' }}>{supplier.tax_id || '-'}</td>
                 <td style={{ padding: '12px' }}>
-                  <button className="btn btn-primary" style={{ marginRight: '8px', padding: '6px 12px' }} onClick={() => openEditModal(supplier)}>Edit</button>
-                  <button className="btn btn-danger" style={{ padding: '6px 12px' }} onClick={() => handleDelete(supplier.id, supplier.name)}>Delete</button>
+                  <button className="btn btn-primary" style={{ marginRight: '8px', padding: '6px 12px' }} onClick={() => openEditModal(supplier)}> {t('Edit')}</button>
+                  <button className="btn btn-danger" style={{ padding: '6px 12px' }} onClick={() => handleDelete(supplier.id, supplier.name)}>  {t('Delete')}</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {suppliers.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px' }}>No suppliers found</div>
+          <div style={{ textAlign: 'center', padding: '40px' }}>  {t('No suppliers found')}</div>
         )}
       </div>
 
@@ -179,39 +181,39 @@ const SupplierList = () => {
           alignItems: 'center', zIndex: 1000
         }}>
           <div className="card" style={{ width: '550px', maxWidth: '90%', maxHeight: '90%', overflow: 'auto' }}>
-            <h3 style={{ marginBottom: '16px' }}>{editingSupplier ? 'Edit Supplier' : 'Add Supplier'}</h3>
+            <h3 style={{ marginBottom: '16px' }}>{editingSupplier ? t('Edit Supplier') : t('Add Supplier')}</h3>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Supplier Name *</label>
+                <label>{t('Supplier Name *)')}</label>
                 <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
               </div>
               <div className="form-group">
-                <label>Contact Person</label>
+                <label>{t('Contact Person')}</label>
                 <input type="text" value={formData.contact_name} onChange={(e) => setFormData({...formData, contact_name: e.target.value})} />
               </div>
               <div className="form-group">
-                <label>Email</label>
+                <label>{t('Email')}</label>
                 <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
               </div>
               <div className="form-group">
-                <label>Phone</label>
+                <label>{t('Phone')}</label>
                 <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
               </div>
               <div className="form-group">
-                <label>Address</label>
+                <label>{t('Address')}</label>
                 <textarea value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} rows="2" />
               </div>
               <div className="form-group">
-                <label>Tax ID / VAT</label>
+                <label>{t('Tax ID / VAT')}</label>
                 <input type="text" value={formData.tax_id} onChange={(e) => setFormData({...formData, tax_id: e.target.value})} />
               </div>
               <div className="form-group">
-                <label>Notes</label>
+                <label>{t('Notes')}</label>
                 <textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} rows="2" />
               </div>
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '16px' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Save</button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}> {t('Cancel')}</button>
+                <button type="submit" className="btn btn-primary"> {t('Save')} </button>
               </div>
             </form>
           </div>

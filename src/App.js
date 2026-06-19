@@ -6,9 +6,12 @@ import Dashboard from './components/Dashboard/Dashboard';
 import ProductList from './components/Products/ProductList';
 import SupplierList from './components/Suppliers/SupplierList';
 import CategoryList from './components/Categories/CategoryList';
-import TransactionList from './components/Transactions/TransactionList';
+import GoodsReceipt from './components/Transactions/GoodsReceipt';
+import GoodsIssue from './components/Transactions/GoodsIssue';
+import TransactionHistory from './components/Transactions/TransactionHistory';
 import LowStockAlert from './components/Products/LowStockAlert';
 import Profile from './components/Profile/Profile';
+import UserList from './components/Users/UserList';
 import Navbar from './components/Layout/Navbar';
 import Sidebar from './components/Layout/Sidebar';
 import './App.css';
@@ -44,9 +47,12 @@ function AppContent() {
         <Route path="/products" element={<ProductList />} />
         <Route path="/categories" element={<CategoryList />} />
         <Route path="/suppliers" element={<SupplierList />} />
-        <Route path="/transactions" element={<TransactionList />} />
+        <Route path="/receipt" element={<GoodsReceipt />} />
+        <Route path="/issue" element={<GoodsIssue />} />
+        <Route path="/transactions" element={<TransactionHistory />} />
         <Route path="/low-stock" element={<LowStockAlert />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/users" element={<UserList />} />
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>

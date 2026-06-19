@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faEnvelope, faPhone, faLock, faSave, faTimes, faCamera, faIdCard } from '@fortawesome/free-solid-svg-icons';
-import { getProfile, updateProfile } from '../../services/userService';
+import { faUser, faEnvelope, faPhone, faLock, faSave, faTimes, faIdCard } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 const Profile = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,14 +29,16 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await getProfile();
-      setProfile(response.data);
+      setLoading(true);
+      const response = await api.get('/profile');
+      setProfile(response.data.data);
       setFormData({
-        full_name: response.data.full_name || '',
-        phone: response.data.phone || ''
+        full_name: response.data.data.full_name || '',
+        phone: response.data.data.phone || ''
       });
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error fetching profile:', error);
+      setMessage({ type: 'error', text: t('profile.fetchError') });
     } finally {
       setLoading(false);
     }
@@ -43,49 +47,81 @@ const Profile = () => {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setMessage({ type: '', text: '' });
+    setLoading(true);
+    
     try {
-      const response = await updateProfile(formData);
-      setProfile(response.data);
-      setEditing(false);
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+      const response = await api.put('/profile', {
+        full_name: formData.full_name,
+        phone: formData.phone
+      });
+      
+      if (response.data.success) {
+        setProfile(response.data.data);
+        setEditing(false);
+        setMessage({ type: 'success', text: t('profile.profileUpdated') });
+        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+      } else {
+        setMessage({ type: 'error', text: response.data.message || t('profile.updateFailed') });
+      }
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Update failed' });
+      console.error('Update error:', error);
+      setMessage({ 
+        type: 'error', 
+        text: error.response?.data?.message || t('profile.updateFailed') 
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
+    setMessage({ type: '', text: '' });
+    
     if (passwordData.new_password !== passwordData.confirm_password) {
-      setMessage({ type: 'error', text: 'New passwords do not match' });
-      return;
-    }
-    if (passwordData.new_password.length < 4) {
-      setMessage({ type: 'error', text: 'Password must be at least 4 characters' });
+      setMessage({ type: 'error', text: t('profile.passwordMismatch') });
       return;
     }
     
+    if (passwordData.new_password.length < 4) {
+      setMessage({ type: 'error', text: t('profile.passwordTooShort') });
+      return;
+    }
+    
+    setLoading(true);
+    
     try {
-      const response = await updateProfile({
+      const response = await api.put('/profile/password', {
         current_password: passwordData.current_password,
         new_password: passwordData.new_password
       });
-      setMessage({ type: 'success', text: 'Password updated successfully!' });
-      setShowPasswordForm(false);
-      setPasswordData({ current_password: '', new_password: '', confirm_password: '' });
-      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+      
+      if (response.data.success) {
+        setMessage({ type: 'success', text: t('profile.passwordUpdated') });
+        setShowPasswordForm(false);
+        setPasswordData({ current_password: '', new_password: '', confirm_password: '' });
+        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+      } else {
+        setMessage({ type: 'error', text: response.data.message || t('profile.passwordUpdateFailed') });
+      }
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Password update failed' });
+      console.error('Password update error:', error);
+      setMessage({ 
+        type: 'error', 
+        text: error.response?.data?.message || t('profile.passwordUpdateFailed') 
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) return <div className="loading">Loading profile...</div>;
+  if (loading) return <div className="loading">{t('common.loading')}</div>;
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h1 style={{ marginBottom: '24px', fontSize: '28px', fontWeight: '600' }}>
         <FontAwesomeIcon icon={faUser} style={{ marginRight: '12px' }} />
-        My Profile
+        {t('profile.title')}
       </h1>
 
       {message.text && (
@@ -112,7 +148,9 @@ const Profile = () => {
             <FontAwesomeIcon icon={faUser} size="2x" />
           </div>
           <h2 style={{ marginBottom: '4px' }}>{profile?.full_name || profile?.username}</h2>
-          <p style={{ color: '#6b7280' }}>{profile?.role_name === 'admin' ? 'Administrator' : 'User'}</p>
+          <p style={{ color: '#6b7280' }}>
+            {profile?.role_name === 'admin' ? t('profile.admin') : t('profile.user')}
+          </p>
         </div>
 
         {/* Profile Info Display */}
@@ -122,72 +160,72 @@ const Profile = () => {
               <div style={{ display: 'flex', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #e5e7eb' }}>
                 <div style={{ width: '120px', fontWeight: '600' }}>
                   <FontAwesomeIcon icon={faUser} style={{ marginRight: '8px', color: '#6b7280' }} />
-                  Username:
+                  {t('profile.username')}
                 </div>
                 <div>{profile?.username}</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #e5e7eb' }}>
                 <div style={{ width: '120px', fontWeight: '600' }}>
                   <FontAwesomeIcon icon={faIdCard} style={{ marginRight: '8px', color: '#6b7280' }} />
-                  Full Name:
+                  {t('profile.fullName')}
                 </div>
-                <div>{profile?.full_name || 'Not set'}</div>
+                <div>{profile?.full_name || t('profile.notSet')}</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #e5e7eb' }}>
                 <div style={{ width: '120px', fontWeight: '600' }}>
                   <FontAwesomeIcon icon={faEnvelope} style={{ marginRight: '8px', color: '#6b7280' }} />
-                  Email:
+                  {t('profile.email')}
                 </div>
                 <div>{profile?.email}</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #e5e7eb' }}>
                 <div style={{ width: '120px', fontWeight: '600' }}>
                   <FontAwesomeIcon icon={faPhone} style={{ marginRight: '8px', color: '#6b7280' }} />
-                  Phone:
+                  {t('profile.phone')}
                 </div>
-                <div>{profile?.phone || 'Not set'}</div>
+                <div>{profile?.phone || t('profile.notSet')}</div>
               </div>
             </div>
             
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button className="btn btn-primary" onClick={() => setEditing(true)}>
+              <button className="btn btn-primary" onClick={() => setEditing(true)} disabled={loading}>
                 <FontAwesomeIcon icon={faSave} style={{ marginRight: '8px' }} />
-                Edit Profile
+                {t('profile.editProfile')}
               </button>
-              <button className="btn btn-secondary" onClick={() => setShowPasswordForm(true)}>
+              <button className="btn btn-secondary" onClick={() => setShowPasswordForm(true)} disabled={loading}>
                 <FontAwesomeIcon icon={faLock} style={{ marginRight: '8px' }} />
-                Change Password
+                {t('profile.changePassword')}
               </button>
             </div>
           </>
         ) : (
           <form onSubmit={handleUpdateProfile}>
             <div className="form-group">
-              <label>Full Name</label>
+              <label>{t('profile.fullName')}</label>
               <input
                 type="text"
                 value={formData.full_name}
                 onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                placeholder="Enter your full name"
+                placeholder={t('profile.fullNamePlaceholder')}
               />
             </div>
             <div className="form-group">
-              <label>Phone Number</label>
+              <label>{t('profile.phone')}</label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                placeholder="+1 234 567 8900"
+                placeholder={t('profile.phonePlaceholder')}
               />
             </div>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button type="button" className="btn btn-secondary" onClick={() => setEditing(false)}>
+              <button type="button" className="btn btn-secondary" onClick={() => setEditing(false)} disabled={loading}>
                 <FontAwesomeIcon icon={faTimes} style={{ marginRight: '8px' }} />
-                Cancel
+                {t('common.cancel')}
               </button>
-              <button type="submit" className="btn btn-primary">
+              <button type="submit" className="btn btn-primary" disabled={loading}>
                 <FontAwesomeIcon icon={faSave} style={{ marginRight: '8px' }} />
-                Save Changes
+                {loading ? t('common.loading') : t('common.save')}
               </button>
             </div>
           </form>
@@ -204,11 +242,11 @@ const Profile = () => {
           <div className="card" style={{ width: '450px', maxWidth: '90%' }}>
             <h3 style={{ marginBottom: '16px' }}>
               <FontAwesomeIcon icon={faLock} style={{ marginRight: '8px' }} />
-              Change Password
+              {t('profile.changePassword')}
             </h3>
             <form onSubmit={handleUpdatePassword}>
               <div className="form-group">
-                <label>Current Password</label>
+                <label>{t('profile.currentPassword')}</label>
                 <input
                   type="password"
                   value={passwordData.current_password}
@@ -217,7 +255,7 @@ const Profile = () => {
                 />
               </div>
               <div className="form-group">
-                <label>New Password</label>
+                <label>{t('profile.newPassword')}</label>
                 <input
                   type="password"
                   value={passwordData.new_password}
@@ -227,7 +265,7 @@ const Profile = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Confirm New Password</label>
+                <label>{t('profile.confirmPassword')}</label>
                 <input
                   type="password"
                   value={passwordData.confirm_password}
@@ -236,8 +274,12 @@ const Profile = () => {
                 />
               </div>
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowPasswordForm(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Update Password</button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowPasswordForm(false)} disabled={loading}>
+                  {t('common.cancel')}
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? t('common.loading') : t('profile.updatePassword')}
+                </button>
               </div>
             </form>
           </div>

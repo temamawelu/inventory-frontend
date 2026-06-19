@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { getCategories, createCategory, updateCategory, deleteCategory, searchCategories } from '../../services/categoryService';
+import { useTranslation } from 'react-i18next';
 
 const CategoryList = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -100,9 +102,9 @@ const CategoryList = () => {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: '600' }}>🏷️ Categories</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: '600' }}> {t('categories.title')}</h1>
         <button className="btn btn-primary" onClick={openAddModal} style={{ padding: '10px 20px' }}>
-          + Add Category
+          {t('categories.addCategory')}
         </button>
       </div>
 
@@ -125,11 +127,11 @@ const CategoryList = () => {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#f9fafb' }}>
-              <th style={{ padding: '12px' }}>ID</th>
-              <th style={{ padding: '12px' }}>Name</th>
-              <th style={{ padding: '12px' }}>Description</th>
-              <th style={{ padding: '12px' }}>Created Date</th>
-              <th style={{ padding: '12px' }}>Actions</th>
+              <th style={{ padding: '12px' }}>{t('categories.id')}</th>
+              <th style={{ padding: '12px' }}>{t('categories.name')}</th>
+              <th style={{ padding: '12px' }}>{t('categories.description')}</th>
+              <th style={{ padding: '12px' }}>{t('categories.createdDate')}</th>
+              <th style={{ padding: '12px' }}>{t('categories.actions')}</th>
             </tr>
           </thead>
           <tbody>

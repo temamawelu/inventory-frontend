@@ -32,7 +32,7 @@ const Navbar = () => {
       zIndex: 1000
     }}>
       <div style={{ fontSize: '18px', fontWeight: 'bold' }}>
-        {t('app.title')}
+        {t('app.title')} 
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>

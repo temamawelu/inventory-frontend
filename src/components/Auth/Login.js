@@ -35,6 +35,7 @@ const [password, setPassword] = useState('');
 
   return (
     <div style={{ maxWidth: '400px', margin: '100px auto' }}>
+      
       <div className="card">
         <h2 style={{ textAlign: 'center' }}>Inventory Management System</h2>
         <p style={{ textAlign: 'center', color: '#6b7280' }}>Sign in to the system</p>
